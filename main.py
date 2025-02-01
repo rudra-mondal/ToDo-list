@@ -1,8 +1,9 @@
 import sys
 import json
 from pathlib import Path
-from PySide6.QtCore import Qt, QSize, Signal, QObject, QPoint
+from PySide6.QtCore import Qt, QSize, Signal, QObject, QUrl
 from PySide6.QtGui import QIcon, QAction, QFont, QColor, QPixmap
+from PySide6.QtMultimedia import QSoundEffect
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                                QLineEdit, QListWidget, QListWidgetItem, QPushButton, 
                                QStyle, QDialog, QLabel, QMenu, QSpacerItem, 
@@ -24,6 +25,8 @@ class TaskModel(QObject):
         super().__init__()
         self.tasks = []
         self.load_tasks()
+        self.sound_effect = QSoundEffect()
+        self.sound_effect.setSource(QUrl.fromLocalFile(str(ICON_PATH / "complete.mp3")))
         
     def add_task(self, description):
         self.tasks.append(Task(description))
@@ -39,6 +42,7 @@ class TaskModel(QObject):
         self.tasks[index].completed = not self.tasks[index].completed
         self.save_tasks()
         self.data_changed.emit()
+        self.sound_effect.play()
         
     def toggle_priority(self, index):
         self.tasks[index].prioritized = not self.tasks[index].prioritized
@@ -95,6 +99,8 @@ class TaskItemWidget(QFrame):
         # Task text
         self.text_label = QLabel(task.description)
         self.text_label.setStyleSheet("font-size: 14px; color: #333;")
+        self.text_label.setWordWrap(True)
+        self.text_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         if task.completed:
             self.text_label.setStyleSheet("color: #888; text-decoration: line-through;")
         
@@ -218,7 +224,22 @@ class MainWindow(QMainWindow):
         # Task list
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
-        self.scroll.setStyleSheet("border: none; background: transparent;")
+        self.scroll.setStyleSheet(f"""
+            QScrollArea {{ border: none; background: transparent; }}
+            QScrollBar:vertical {{
+                background: #f5f5f5;
+                width: 6px;
+                margin: 0px;
+            }}
+            QScrollBar::handle:vertical {{
+                background: {PRIMARY_COLOR};
+                min-height: 20px;
+                border-radius: 4px;
+            }}
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+                background: none;
+            }}
+        """)
         
         self.task_container = QWidget()
         self.task_layout = QVBoxLayout(self.task_container)
@@ -340,6 +361,7 @@ class MiniWindow(QMainWindow):
         self.model = model
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
         self.init_ui()
+        self.model.data_changed.connect(self.update_ui)
         
     def init_ui(self):
         self.setWindowTitle("Tasks Mini")
@@ -379,23 +401,52 @@ class MiniWindow(QMainWindow):
         header_layout.addStretch()
         
         # Task list
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
+        self.scroll = QScrollArea()
+        self.scroll.setWidgetResizable(True)
+        self.scroll.setStyleSheet(f"""
+            QScrollArea {{ border: none; background: transparent; }}
+            QScrollBar:vertical {{
+                background: #f5f5f5;
+                width: 6px;
+                margin: 0px;
+            }}
+            QScrollBar::handle:vertical {{
+                background: {PRIMARY_COLOR};
+                min-height: 20px;
+                border-radius: 4px;
+            }}
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
+                background: none;
+            }}
+        """)
         
-        task_container = QWidget()
-        task_layout = QVBoxLayout(task_container)
-        task_layout.setContentsMargins(0, 0, 0, 0)
-        task_layout.setSpacing(8)
+        self.task_container = QWidget()
+        self.task_layout = QVBoxLayout(self.task_container)
+        self.task_layout.setContentsMargins(0, 0, 0, 0)
+        self.task_layout.setSpacing(8)
         
-        for task in self.model.tasks:
-            widget = TaskItemWidget(task, self.model.tasks.index(task), self.model, is_mini=True)
-            task_layout.addWidget(widget)
-            
-        scroll.setWidget(task_container)
+        self.scroll.setWidget(self.task_container)
         
         layout.addWidget(header)
-        layout.addWidget(scroll)
+        layout.addWidget(self.scroll)
         self.setCentralWidget(main_widget)
+        
+        self.update_ui()
+        
+    def update_ui(self):
+        # Clear existing tasks
+        while self.task_layout.count():
+            item = self.task_layout.takeAt(0)
+            if item.widget():
+                item.widget().deleteLater()
+        
+        # Add active tasks only (non-completed)
+        active_tasks = [t for t in self.model.tasks if not t.completed]
+        for task in active_tasks:
+            widget = TaskItemWidget(task, self.model.tasks.index(task), self.model)
+            self.task_layout.addWidget(widget)
+            
+        self.task_layout.addStretch()
 
     def show_main_window(self):
         self.close()
