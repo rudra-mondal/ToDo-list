@@ -1,13 +1,11 @@
 import sys
 import json
 from pathlib import Path
-from PySide6.QtCore import Qt, QSize, Signal, QObject, QUrl
-from PySide6.QtGui import QIcon, QAction, QFont, QColor, QPixmap
-from PySide6.QtMultimedia import QSoundEffect
+import pygame  # for sound playback
+from PySide6.QtCore import Qt, QSize, Signal, QObject
+from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
-                               QLineEdit, QListWidget, QListWidgetItem, QPushButton, 
-                               QStyle, QDialog, QLabel, QMenu, QSpacerItem, 
-                               QSizePolicy, QScrollArea, QFrame)
+                               QLineEdit, QPushButton, QMenu, QLabel, QSizePolicy, QScrollArea, QFrame, QDialog)
 
 ICON_PATH = Path(__file__).parent / "icons"
 PRIMARY_COLOR = "#C6534E"
@@ -25,8 +23,9 @@ class TaskModel(QObject):
         super().__init__()
         self.tasks = []
         self.load_tasks()
-        self.sound_effect = QSoundEffect()
-        self.sound_effect.setSource(QUrl.fromLocalFile(str(ICON_PATH / "complete.mp3")))
+        # Initialize pygame mixer for sound playback.
+        pygame.mixer.init()
+        self.complete_sound = pygame.mixer.Sound(str(ICON_PATH / "complete.mp3"))
         
     def add_task(self, description):
         self.tasks.append(Task(description))
@@ -42,7 +41,9 @@ class TaskModel(QObject):
         self.tasks[index].completed = not self.tasks[index].completed
         self.save_tasks()
         self.data_changed.emit()
-        self.sound_effect.play()
+        # Only play the sound when a task is marked complete (not when unchecking)
+        if self.tasks[index].completed:
+            self.complete_sound.play()
         
     def toggle_priority(self, index):
         self.tasks[index].prioritized = not self.tasks[index].prioritized
@@ -77,7 +78,8 @@ class TaskItemWidget(QFrame):
         self.task = task
         self.is_mini = is_mini
         
-        self.setFixedHeight(50)
+        # Increase the fixed height a bit for better readability.
+        self.setFixedHeight(60)
         self.setStyleSheet(f"""
             background: white;
             border-radius: 8px;
@@ -102,9 +104,9 @@ class TaskItemWidget(QFrame):
         self.text_label.setWordWrap(True)
         self.text_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         if task.completed:
-            self.text_label.setStyleSheet("color: #888; text-decoration: line-through;")
+            self.text_label.setStyleSheet("color: #888; text-decoration: line-through; font-size: 14px;")
         
-        # Priority button
+        # Priority (star) button -- always added so it shows in every window.
         self.priority_btn = QPushButton()
         self.priority_btn.setFixedSize(24, 24)
         self.priority_btn.setCheckable(True)
@@ -114,8 +116,7 @@ class TaskItemWidget(QFrame):
         
         layout.addWidget(self.status_btn)
         layout.addWidget(self.text_label, 1)
-        if not self.is_mini:
-            layout.addWidget(self.priority_btn)
+        layout.addWidget(self.priority_btn)
         
         self.setContextMenuPolicy(Qt.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
@@ -137,6 +138,7 @@ class TaskItemWidget(QFrame):
         """)
         
     def show_context_menu(self, pos):
+        # Only show the context menu in the main window.
         if not self.is_mini:
             menu = QMenu()
             edit_action = QAction("Edit", self)
@@ -246,7 +248,7 @@ class MainWindow(QMainWindow):
         self.task_layout.setContentsMargins(0, 0, 0, 0)
         self.task_layout.setSpacing(8)
         
-        # Completed section
+        # Completed section with fixed spacing and top alignment
         self.completed_header = QPushButton("Completed 0  ⌄")
         self.completed_header.setStyleSheet(f"""
             QPushButton {{
@@ -259,9 +261,11 @@ class MainWindow(QMainWindow):
         """)
         self.completed_header.clicked.connect(self.toggle_completed_visibility)
         self.completed_items = QWidget()
+        self.completed_items.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.completed_layout = QVBoxLayout(self.completed_items)
         self.completed_layout.setContentsMargins(0, 0, 0, 0)
-        self.completed_layout.setSpacing(8)
+        self.completed_layout.setSpacing(6)
+        self.completed_layout.setAlignment(Qt.AlignTop)
         
         self.task_layout.addWidget(self.completed_header)
         self.task_layout.addWidget(self.completed_items)
@@ -288,7 +292,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.scroll)
         layout.addWidget(self.add_btn)
         
-        # Hidden input
+        # Hidden input for new tasks
         self.task_input = QLineEdit()
         self.task_input.setPlaceholderText("Type a new task...")
         self.task_input.setStyleSheet("""
@@ -321,21 +325,22 @@ class MainWindow(QMainWindow):
             
     def toggle_completed_visibility(self):
         self.completed_items.setVisible(not self.completed_items.isVisible())
-        self.completed_header.setText(f"Completed {sum(t.completed for t in self.model.tasks)}  {'⌄' if self.completed_items.isVisible() else '⌃'}")
+        visible_symbol = "⌄" if self.completed_items.isVisible() else "⌃"
+        self.completed_header.setText(f"Completed {sum(t.completed for t in self.model.tasks)}  {visible_symbol}")
             
     def update_ui(self):
-        # Clear existing tasks
+        # Clear active (non-completed) tasks (the completed section remains at the top)
         while self.task_layout.count() > 2:
             item = self.task_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
                 
-        # Add prioritized tasks first
+        # Add prioritized tasks first, then normal tasks
         prioritized_tasks = [t for t in self.model.tasks if not t.completed and t.prioritized]
         normal_tasks = [t for t in self.model.tasks if not t.completed and not t.prioritized]
-        
         for task in prioritized_tasks + normal_tasks:
             widget = TaskItemWidget(task, self.model.tasks.index(task), self.model)
+            # Insert above the completed section (which is always at position count()-2)
             self.task_layout.insertWidget(self.task_layout.count()-2, widget)
             
         # Update completed tasks
@@ -373,7 +378,7 @@ class MiniWindow(QMainWindow):
         layout.setContentsMargins(15, 15, 15, 15)
         layout.setSpacing(15)
         
-        # Header
+        # Header with back button
         header = QWidget()
         header_layout = QHBoxLayout(header)
         header_layout.setContentsMargins(0, 0, 0, 0)
@@ -400,7 +405,7 @@ class MiniWindow(QMainWindow):
         header_layout.addWidget(title)
         header_layout.addStretch()
         
-        # Task list
+        # Task list for active (non-completed) tasks
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
         self.scroll.setStyleSheet(f"""
@@ -424,7 +429,8 @@ class MiniWindow(QMainWindow):
         self.task_layout = QVBoxLayout(self.task_container)
         self.task_layout.setContentsMargins(0, 0, 0, 0)
         self.task_layout.setSpacing(8)
-        
+        # Align the layout to the top so no extra spacing is added.
+        self.task_layout.setAlignment(Qt.AlignTop)
         self.scroll.setWidget(self.task_container)
         
         layout.addWidget(header)
@@ -434,20 +440,21 @@ class MiniWindow(QMainWindow):
         self.update_ui()
         
     def update_ui(self):
-        # Clear existing tasks
+        # Clear existing tasks in the mini-window layout
         while self.task_layout.count():
             item = self.task_layout.takeAt(0)
             if item.widget():
                 item.widget().deleteLater()
         
-        # Add active tasks only (non-completed)
+        # Get active tasks (non-completed) and sort so that prioritized tasks come first.
         active_tasks = [t for t in self.model.tasks if not t.completed]
+        active_tasks = sorted(active_tasks, key=lambda t: not t.prioritized)
         for task in active_tasks:
-            widget = TaskItemWidget(task, self.model.tasks.index(task), self.model)
+            widget = TaskItemWidget(task, self.model.tasks.index(task), self.model, is_mini=True)
             self.task_layout.addWidget(widget)
             
-        self.task_layout.addStretch()
-
+        # (No stretch added here so the spacing remains consistent.)
+        
     def show_main_window(self):
         self.close()
         main_window.show()
