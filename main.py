@@ -79,10 +79,9 @@ class TaskItemWidget(QFrame):
         self.task = task
         self.is_mini = is_mini
         
-        # Instead of fixing the height, we set a minimum so it can expand.
+        # Set a fixed range for the height but use Preferred vertical policy so they don't expand unnecessarily.
         self.setMinimumHeight(60)
-        self.setMaximumHeight(120)
-        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         self.setStyleSheet(f"""
             background: white;
             border-radius: 8px;
@@ -106,7 +105,7 @@ class TaskItemWidget(QFrame):
         self.text_label.setStyleSheet("font-size: 14px; color: #333;")
         self.text_label.setWordWrap(True)
         # Allow the label to expand vertically as needed.
-        self.text_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.text_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         if task.completed:
             self.text_label.setStyleSheet("color: #888; text-decoration: line-through; font-size: 14px;")
         
@@ -332,16 +331,13 @@ class MainWindow(QMainWindow):
             self.task_input.hide()
             
     def toggle_completed_visibility(self):
-        # Toggle the completed items’ visibility.
+        # Toggle the completed items’ visibility using show/hide.
         if self.completed_items.isVisible():
-            # When collapsing, force the height to 0 so it doesn't affect spacing.
-            self.completed_items.setFixedHeight(0)
+            self.completed_items.hide()
             symbol = "⌃"
         else:
-            # When expanding, remove the fixed height constraint.
-            self.completed_items.setFixedHeight(self.completed_items.sizeHint().height())
+            self.completed_items.show()
             symbol = "⌄"
-        self.completed_items.setVisible(not self.completed_items.isVisible())
         self.completed_header.setText(f"Completed {sum(t.completed for t in self.model.tasks)}  {symbol}")
             
     def update_ui(self):
@@ -368,7 +364,9 @@ class MainWindow(QMainWindow):
                 item.widget().deleteLater()
                 
         completed_tasks = [t for t in self.model.tasks if t.completed]
-        self.completed_header.setText(f"Completed {len(completed_tasks)}  ⌄")
+        # Ensure the header arrow reflects the current state.
+        arrow = "⌄" if self.completed_items.isVisible() else "⌃"
+        self.completed_header.setText(f"Completed {len(completed_tasks)}  {arrow}")
         for task in completed_tasks:
             widget = TaskItemWidget(task, self.model.tasks.index(task), self.model)
             self.completed_layout.addWidget(widget)
