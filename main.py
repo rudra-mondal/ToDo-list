@@ -79,8 +79,10 @@ class TaskItemWidget(QFrame):
         self.task = task
         self.is_mini = is_mini
         
-        # Fixed height for better readability.
-        self.setFixedHeight(60)
+        # Instead of fixing the height, we set a minimum so it can expand.
+        self.setMinimumHeight(60)
+        self.setMaximumHeight(120)
+        self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.setStyleSheet(f"""
             background: white;
             border-radius: 8px;
@@ -88,7 +90,7 @@ class TaskItemWidget(QFrame):
         """)
         
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(15, 0, 15, 0)
+        layout.setContentsMargins(15, 10, 15, 10)
         layout.setSpacing(15)
 
         # Status button
@@ -103,6 +105,7 @@ class TaskItemWidget(QFrame):
         self.text_label = QLabel(task.description)
         self.text_label.setStyleSheet("font-size: 14px; color: #333;")
         self.text_label.setWordWrap(True)
+        # Allow the label to expand vertically as needed.
         self.text_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         if task.completed:
             self.text_label.setStyleSheet("color: #888; text-decoration: line-through; font-size: 14px;")
@@ -386,7 +389,14 @@ class MiniWindow(QMainWindow):
     def init_ui(self):
         self.setWindowTitle("ToDo-Mini")
         self.setWindowIcon(QIcon(str(ICON_PATH / "window.ico")))
-        self.setGeometry(100, 100, 300, 400)
+        self.resize(250, 290)  # Set the size of the mini window
+        
+        # Position the mini window at the top-right corner of the screen.
+        screen_geometry = QApplication.primaryScreen().availableGeometry()
+        margin = 32  # margin from the screen edges
+        x = screen_geometry.x() + screen_geometry.width() - self.width() - margin
+        y = screen_geometry.y() + margin
+        self.move(x, y)
         
         main_widget = QWidget()
         layout = QVBoxLayout(main_widget)
