@@ -1,14 +1,14 @@
 import sys
 import json
 from pathlib import Path
-import pygame  # for sound playback
+import pygame
 from PySide6.QtCore import Qt, QSize, Signal, QObject
 from PySide6.QtGui import QIcon, QAction
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                                QLineEdit, QPushButton, QMenu, QLabel, QSizePolicy, QScrollArea,
                                QFrame, QDialog)
 
-ICON_PATH = Path(__file__).parent / "icons"
+ICON_PATH = Path(__file__).parent / "Assets"
 PRIMARY_COLOR = "#C6534E"
 
 class Task:
@@ -176,8 +176,8 @@ class MainWindow(QMainWindow):
         self.model.data_changed.connect(self.update_ui)
         
     def init_ui(self):
-        self.setWindowTitle("Tasks")
-        self.setWindowIcon(QIcon(str(ICON_PATH / "house.svg")))
+        self.setWindowTitle("ToDo List")
+        self.setWindowIcon(QIcon(str(ICON_PATH / "window.ico")))
         self.setGeometry(100, 100, 400, 600)
         
         main_widget = QWidget()
@@ -384,8 +384,8 @@ class MiniWindow(QMainWindow):
         self.model.data_changed.connect(self.update_ui)
         
     def init_ui(self):
-        self.setWindowTitle("Tasks Mini")
-        self.setWindowIcon(QIcon(str(ICON_PATH / "house.svg")))
+        self.setWindowTitle("ToDo-Mini")
+        self.setWindowIcon(QIcon(str(ICON_PATH / "window.ico")))
         self.setGeometry(100, 100, 300, 400)
         
         main_widget = QWidget()
