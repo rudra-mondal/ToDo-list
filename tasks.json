@@ -1,0 +1,32 @@
+[
+    {
+        "description": "This task is completed",
+        "completed": true,
+        "prioritized": false
+    },
+    {
+        "description": "🎉 Welcome to ToDo List",
+        "completed": false,
+        "prioritized": false
+    },
+    {
+        "description": "Click on the \"Add a task\" button to add your first task",
+        "completed": false,
+        "prioritized": false
+    },
+    {
+        "description": "👈 Click on the radio icon (at the left side of every task) to mark as completed.",
+        "completed": false,
+        "prioritized": false
+    },
+    {
+        "description": "Click on the star ⭐ icon to prioritize a task.",
+        "completed": false,
+        "prioritized": false
+    },
+    {
+        "description": "Right click on any task to get options for \"Edit\" and \"Delete\"",
+        "completed": false,
+        "prioritized": false
+    }
+]
