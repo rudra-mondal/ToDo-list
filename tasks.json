@@ -1,16 +1,16 @@
 [
     {
-        "description": "This task is completed",
+        "description": "This task is completed.",
         "completed": true,
         "prioritized": false
     },
     {
-        "description": "🎉 Welcome to ToDo List",
+        "description": "🎉 Welcome to ToDo List.",
         "completed": false,
         "prioritized": false
     },
     {
-        "description": "Click on the \"Add a task\" button to add your first task",
+        "description": "Click on the \"Add a task\" button to add your first task.",
         "completed": false,
         "prioritized": false
     },
@@ -25,7 +25,7 @@
         "prioritized": false
     },
     {
-        "description": "Right click on any task to get options for \"Edit\" and \"Delete\"",
+        "description": "Right click on any task to get options for \"Edit\" and \"Delete\".",
         "completed": false,
         "prioritized": false
     }
