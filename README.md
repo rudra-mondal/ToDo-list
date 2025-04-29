@@ -4,7 +4,7 @@
 A simple yet functional ToDo list application built with Python and the PySide6 framework. Manage your tasks efficiently with features like completion status, priority marking, editing, deleting, and a handy always-on-top mini mode. Tasks are saved locally in a `tasks.json` file.
 
 <h4 align=center>👇 Here's a glimpse of the new look 👇</h4>
-<p align=center><img src="https://github.com/user-attachments/assets/46ce21b2-c4ac-48d9-a41a-2137e89133ab" alt="ToDo List Quick Look" height="500"></img></p>
+<p align=center><img src="https://github.com/user-attachments/assets/7b3db1de-06e3-4b02-8bbd-345bde957c5d" alt="ToDo List Quick Look" height="500"></img></p>
 
 ## ✨ Features
 
