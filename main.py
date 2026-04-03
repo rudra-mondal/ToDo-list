@@ -20,6 +20,7 @@ from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, 
 # Note: ICON_PATH definition is removed, using resource_path directly
 PRIMARY_COLOR = "#C6534E"
 WINDOW_BG_COLOR = "#F5F5F5" # Main window background
+ICON_CACHE = {} # Cache for loaded icons
 MINI_WINDOW_BG_COLOR = "#F5F5F5" # Mini window background
 DIALOG_BG_COLOR = "#FFFFFF" # Edit dialog background
 
@@ -250,10 +251,17 @@ class TaskItemWidget(QFrame):
 
     def _get_icon(self, filename):
         """Safely gets a QIcon using resource_path, falling back to None."""
+        if filename in ICON_CACHE:
+            return ICON_CACHE[filename]
+
         icon_full_path = resource_path(os.path.join("Assets", filename)) # Use resource_path
         if os.path.isfile(icon_full_path):
-            return QIcon(icon_full_path)
+            icon = QIcon(icon_full_path)
+            ICON_CACHE[filename] = icon
+            return icon
+
         print(f"Warning: Icon not found: {icon_full_path}")
+        ICON_CACHE[filename] = None
         return None
 
     def update_status_icon(self):
