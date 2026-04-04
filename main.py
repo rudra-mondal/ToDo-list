@@ -208,7 +208,8 @@ class TaskItemWidget(QFrame):
         self.status_btn.setCheckable(True)
         self.status_btn.setChecked(task.completed)
         self.status_btn.clicked.connect(self._on_status_toggled)
-        self.status_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.status_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.status_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.update_status_icon()
 
         # Text Label
@@ -223,7 +224,8 @@ class TaskItemWidget(QFrame):
         self.priority_btn.setCheckable(True)
         self.priority_btn.setChecked(task.prioritized)
         self.priority_btn.clicked.connect(self._on_priority_toggled)
-        self.priority_btn.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.priority_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.priority_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.update_priority_icon()
 
         layout.addWidget(self.status_btn)
@@ -265,27 +267,37 @@ class TaskItemWidget(QFrame):
         return None
 
     def update_status_icon(self):
+        action_text = "Mark as incomplete" if self.task.completed else "Mark as completed"
+        self.status_btn.setToolTip(action_text)
+        self.status_btn.setAccessibleName(action_text)
+        base_style = "QPushButton { border: none; border-radius: 4px; outline: none; } QPushButton:focus { border: 2px solid " + PRIMARY_COLOR + "; }"
         icon_name = "check.svg" if self.task.completed else "radio.svg"
         icon = self._get_icon(icon_name)
         if icon:
             self.status_btn.setIcon(icon)
             self.status_btn.setIconSize(QSize(24, 24))
             self.status_btn.setText("")
-            self.status_btn.setStyleSheet("border: none;")
+            self.status_btn.setStyleSheet(base_style)
         else:
             self.status_btn.setText("✓" if self.task.completed else "O")
+            self.status_btn.setStyleSheet(base_style)
 
     def update_priority_icon(self):
+        action_text = "Remove priority" if self.task.prioritized else "Mark as priority"
+        self.priority_btn.setToolTip(action_text)
+        self.priority_btn.setAccessibleName(action_text)
+        color = PRIMARY_COLOR if self.task.prioritized else "#CCCCCC"
+        base_style = f"QPushButton {{ border: none; color: {color}; border-radius: 4px; outline: none; }} QPushButton:focus {{ border: 2px solid {PRIMARY_COLOR}; }}"
         icon_name = "star_filled.svg" if self.task.prioritized else "star.svg"
         icon = self._get_icon(icon_name)
-        color = PRIMARY_COLOR if self.task.prioritized else "#CCCCCC"
         if icon:
              self.priority_btn.setIcon(icon)
              self.priority_btn.setIconSize(QSize(20, 20))
              self.priority_btn.setText("")
+             self.priority_btn.setStyleSheet(base_style)
         else:
              self.priority_btn.setText("★" if self.task.prioritized else "☆")
-        self.priority_btn.setStyleSheet(f"border: none; color: {color};")
+             self.priority_btn.setStyleSheet(base_style)
 
     def update_text_style(self):
         style = "font-size: 14px;"
