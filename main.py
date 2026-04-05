@@ -196,6 +196,10 @@ class TaskItemWidget(QFrame):
                 border: 1px solid #E0E0E0;
                 margin: 4px 2px;
             }}
+            #TaskItemFrame:hover {{
+                border: 1px solid {PRIMARY_COLOR};
+                background: #FAFAFA;
+            }}
         """)
 
         layout = QHBoxLayout(self)
@@ -430,6 +434,8 @@ class MainWindow(QMainWindow):
         if os.path.isfile(min_icon_full_path): self.mini_btn.setIcon(QIcon(min_icon_full_path))
         else: self.mini_btn.setText("_")
         self.mini_btn.setFixedSize(32, 32); self.mini_btn.setToolTip("Switch to Mini Mode")
+        self.mini_btn.setAccessibleName("Switch to Mini Mode")
+        self.mini_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mini_btn.clicked.connect(self.show_mini_window)
         self.mini_btn.setStyleSheet(f"QPushButton{{border:none;background:{PRIMARY_COLOR};border-radius:16px;}} QPushButton:hover{{background:#D6655E;}}")
         header_layout.addWidget(icon_label); header_layout.addWidget(title_label)
@@ -453,9 +459,11 @@ class MainWindow(QMainWindow):
 
     def _create_input_area(self):
         add_btn = QPushButton("+ Add a task")
+        add_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         add_btn.setStyleSheet(f"QPushButton{{background:{PRIMARY_COLOR};color:white;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;}} QPushButton:hover{{background:#D6655E;}} QPushButton:pressed{{background:#B6453E;}}")
         add_btn.clicked.connect(self.show_add_task_input)
         task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter...")
+        task_input.setAccessibleName("Type a new task")
         task_input.setStyleSheet("QLineEdit{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;} QLineEdit:focus{border:1px solid #AAAAAA;}")
         task_input.returnPressed.connect(self.add_task); task_input.hide()
         return add_btn, task_input
@@ -606,6 +614,8 @@ class MiniWindow(QMainWindow):
         if os.path.isfile(back_icon_full_path): back_btn.setIcon(QIcon(back_icon_full_path))
         else: back_btn.setText("<")
         back_btn.setFixedSize(28, 28); back_btn.setToolTip("Back to Full Mode")
+        back_btn.setAccessibleName("Back to Full Mode")
+        back_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         back_btn.clicked.connect(self.show_main_window)
         back_btn.setStyleSheet(f"QPushButton{{border:none;background:{PRIMARY_COLOR};border-radius:14px;}} QPushButton:hover{{background:#D6655E;}}")
         title = QLabel("Active Tasks")
