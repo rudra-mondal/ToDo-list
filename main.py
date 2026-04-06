@@ -407,6 +407,12 @@ class MainWindow(QMainWindow):
         self.add_btn, self.task_input = self._create_input_area()
 
         # Assemble Task Layout Structure
+        self.empty_state_label = QLabel("No tasks yet. Add one below!")
+        self.empty_state_label.setStyleSheet("color: #888888; font-size: 16px; margin: 20px;")
+        self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.empty_state_label.hide()
+
+        self.task_layout.addWidget(self.empty_state_label)
         self.task_layout.addWidget(self.completed_header)
         self.task_layout.addWidget(self.completed_items)
         self.task_layout.addItem(self.vertical_spacer)
@@ -530,6 +536,18 @@ class MainWindow(QMainWindow):
         symbol = "⌄" if self.completed_header.isChecked() else "⌃"
         self.completed_header.setText(f"Completed {len(completed_tasks)}  {symbol}")
 
+        if not completed_tasks:
+             self.completed_header.hide()
+             self.completed_items.hide()
+        else:
+             self.completed_header.show()
+             self.completed_items.setVisible(self.completed_header.isChecked())
+
+        if not active_tasks and not completed_tasks:
+             self.empty_state_label.show()
+        else:
+             self.empty_state_label.hide()
+
         # Ensure spacer is still at the very end of the main task layout
         current_spacer_item = self.task_layout.itemAt(self.task_layout.count() - 1)
         if not current_spacer_item or current_spacer_item.spacerItem() != self.vertical_spacer:
@@ -599,6 +617,12 @@ class MiniWindow(QMainWindow):
         self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         # Assemble Layout
+        self.empty_state_label = QLabel("No active tasks.")
+        self.empty_state_label.setStyleSheet("color: #888888; font-size: 14px; margin: 20px;")
+        self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.empty_state_label.hide()
+
+        self.task_layout.addWidget(self.empty_state_label)
         self.task_layout.addItem(self.vertical_spacer) # Add spacer first in mini mode
         self.scroll.setWidget(self.task_container)
         layout.addWidget(header)
@@ -654,6 +678,11 @@ class MiniWindow(QMainWindow):
         for i, task in enumerate(reversed(active_tasks)): # Insert active tasks before spacer
             widget = TaskItemWidget(task, self.model, is_mini=True)
             self.task_layout.insertWidget(insertion_index, widget) # Insert at the determined point
+
+        if not active_tasks:
+             self.empty_state_label.show()
+        else:
+             self.empty_state_label.hide()
 
         # Ensure spacer is still physically last
         current_spacer_item = self.task_layout.itemAt(self.task_layout.count() - 1)
