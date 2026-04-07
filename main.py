@@ -14,7 +14,7 @@ from PySide6.QtCore import Qt, QSize, Signal, QObject, QPoint
 from PySide6.QtGui import QIcon, QAction, QPixmap
 from PySide6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout, QHBoxLayout,
                                QLineEdit, QPushButton, QMenu, QLabel, QSizePolicy, QScrollArea,
-                               QFrame, QDialog, QSpacerItem)
+                               QFrame, QDialog, QSpacerItem, QMessageBox)
 
 # --- Configuration ---
 # Note: ICON_PATH definition is removed, using resource_path directly
@@ -311,6 +311,14 @@ class TaskItemWidget(QFrame):
             style += "color: #333333; text-decoration: none;"
         self.text_label.setStyleSheet(style)
 
+    def confirm_and_delete(self, index):
+        reply = QMessageBox.question(self, 'Confirm Deletion',
+                                     "Are you sure you want to delete this task?",
+                                     QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                                     QMessageBox.StandardButton.No)
+        if reply == QMessageBox.StandardButton.Yes:
+            self.model.delete_task(index)
+
     def show_context_menu(self, pos):
         current_index = self.model._find_task_index(self.task)
         if current_index == -1: return
@@ -325,7 +333,7 @@ class TaskItemWidget(QFrame):
 
         delete_action = QAction("Delete", self)
         if delete_icon: delete_action.setIcon(delete_icon)
-        delete_action.triggered.connect(lambda: self.model.delete_task(current_index))
+        delete_action.triggered.connect(lambda: self.confirm_and_delete(current_index))
 
         menu.addAction(edit_action)
         menu.addAction(delete_action)
