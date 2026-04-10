@@ -1,8 +1,5 @@
+## 2024-05-24 - PySide6 Focus Accessibility and `border: none`
 
-## 2024-05-15 - Enhancing Keyboard Navigation and Accessibility for Qt Icon Buttons
-**Learning:** Qt `QPushButton`s set as icon-only often lack visible focus indicators and accessible names, which breaks keyboard navigation. The default `setFocusPolicy` is sometimes disabled (`Qt.FocusPolicy.NoFocus`) for cosmetic reasons, further degrading accessibility.
-**Action:** Always enable `Qt.FocusPolicy.StrongFocus` on interactive elements, provide explicit `setToolTip` and `setAccessibleName` values (especially when dynamic, like toggle buttons), and style `:focus` pseudo-states to ensure keyboard users have visual feedback.
+**Learning:** In PySide6/Qt stylesheets, applying `border: none;` to a widget completely removes its native focus ring, hurting keyboard accessibility. When adding a custom `:focus` border back in, it can cause layout shifts because the element grows by the border width.
 
-## 2025-02-28 - PySide6 Accessible Names & Hover States
-**Learning:** PySide6 components like `QPushButton` and `QLineEdit` used dynamically or exclusively for icons/inputs often lack screen reader support and proper mouse affordance if not explicitly configured. `setAccessibleName` ensures screen readers can announce the purpose of these non-text elements. Using custom `QFrame`s for list items requires explicit `:hover` stylesheet definitions to make them feel interactive, unlike native buttons.
-**Action:** Always add `setAccessibleName` to inputs and icon-only buttons. Add explicit `:hover` styles to custom `QFrame` interactable containers to provide visual feedback to users, ensuring the UI feels responsive to mouse movement. Always set `setCursor(Qt.CursorShape.PointingHandCursor)` on clickable elements that aren't natively styled to do so.
+**Action:** Always default to `border: 2px solid transparent;` (or similar width) instead of `border: none;` for buttons. This maintains the layout size consistently across focused and non-focused states. If retrofitting a button that had `border: none;` and specific padding, reduce the padding by the width of the new border to maintain the exact same visual size. Also, ensure `setFocusPolicy(Qt.FocusPolicy.StrongFocus)` is explicitly called on interactive elements like custom buttons to guarantee they are reachable via Tab navigation.

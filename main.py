@@ -274,7 +274,7 @@ class TaskItemWidget(QFrame):
         action_text = "Mark as incomplete" if self.task.completed else "Mark as completed"
         self.status_btn.setToolTip(action_text)
         self.status_btn.setAccessibleName(action_text)
-        base_style = "QPushButton { border: none; border-radius: 4px; outline: none; } QPushButton:focus { border: 2px solid " + PRIMARY_COLOR + "; }"
+        base_style = "QPushButton { border: 2px solid transparent; border-radius: 4px; outline: none; } QPushButton:focus { border: 2px solid " + PRIMARY_COLOR + "; }"
         icon_name = "check.svg" if self.task.completed else "radio.svg"
         icon = self._get_icon(icon_name)
         if icon:
@@ -291,7 +291,7 @@ class TaskItemWidget(QFrame):
         self.priority_btn.setToolTip(action_text)
         self.priority_btn.setAccessibleName(action_text)
         color = PRIMARY_COLOR if self.task.prioritized else "#CCCCCC"
-        base_style = f"QPushButton {{ border: none; color: {color}; border-radius: 4px; outline: none; }} QPushButton:focus {{ border: 2px solid {PRIMARY_COLOR}; }}"
+        base_style = f"QPushButton {{ border: 2px solid transparent; color: {color}; border-radius: 4px; outline: none; }} QPushButton:focus {{ border: 2px solid {PRIMARY_COLOR}; }}"
         icon_name = "star_filled.svg" if self.task.prioritized else "star.svg"
         icon = self._get_icon(icon_name)
         if icon:
@@ -347,9 +347,11 @@ class TaskItemWidget(QFrame):
         button_layout = QHBoxLayout()
         save_btn = QPushButton("Save")
         save_btn.setDefault(True)
-        save_btn.setStyleSheet(f"padding: 5px 15px; background-color: {PRIMARY_COLOR}; color: white; border: none; border-radius: 4px;")
+        save_btn.setStyleSheet(f"QPushButton {{ padding: 3px 13px; background-color: {PRIMARY_COLOR}; color: white; border: 2px solid transparent; border-radius: 4px; }} QPushButton:focus {{ border: 2px solid #333333; }}")
+        save_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         cancel_btn = QPushButton("Cancel")
-        cancel_btn.setStyleSheet("padding: 5px 15px; border: 1px solid #CCCCCC; border-radius: 4px;")
+        cancel_btn.setStyleSheet("QPushButton { padding: 5px 15px; border: 1px solid #CCCCCC; border-radius: 4px; } QPushButton:focus { border: 2px solid #333333; }")
+        cancel_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
 
         button_layout.addStretch()
         button_layout.addWidget(cancel_btn)
@@ -435,9 +437,10 @@ class MainWindow(QMainWindow):
         else: self.mini_btn.setText("_")
         self.mini_btn.setFixedSize(32, 32); self.mini_btn.setToolTip("Switch to Mini Mode")
         self.mini_btn.setAccessibleName("Switch to Mini Mode")
+        self.mini_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         self.mini_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mini_btn.clicked.connect(self.show_mini_window)
-        self.mini_btn.setStyleSheet(f"QPushButton{{border:none;background:{PRIMARY_COLOR};border-radius:16px;}} QPushButton:hover{{background:#D6655E;}}")
+        self.mini_btn.setStyleSheet(f"QPushButton{{border:2px solid transparent;background:{PRIMARY_COLOR};border-radius:16px;}} QPushButton:hover{{background:#D6655E;}} QPushButton:focus{{border:2px solid #333333;}}")
         header_layout.addWidget(icon_label); header_layout.addWidget(title_label)
         header_layout.addStretch(); header_layout.addWidget(self.mini_btn)
         return header
@@ -451,7 +454,8 @@ class MainWindow(QMainWindow):
 
     def _create_completed_section(self):
         completed_header = QPushButton("Completed 0  ⌄"); completed_header.setCheckable(True); completed_header.setChecked(True)
-        completed_header.setStyleSheet(f"QPushButton{{text-align:left;padding:8px 5px;margin-top:10px;font-size:14px;font-weight:bold;color:{PRIMARY_COLOR};border:none;border-radius:4px;}} QPushButton:hover{{background-color:#EEEEEE;}}")
+        completed_header.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        completed_header.setStyleSheet(f"QPushButton{{text-align:left;padding:6px 3px;margin-top:10px;font-size:14px;font-weight:bold;color:{PRIMARY_COLOR};border:2px solid transparent;border-radius:4px;}} QPushButton:hover{{background-color:#EEEEEE;}} QPushButton:focus{{border:2px solid {PRIMARY_COLOR};}}")
         completed_header.clicked.connect(self.toggle_completed_visibility)
         completed_items = QWidget(); completed_items.setVisible(True)
         completed_layout = QVBoxLayout(completed_items); completed_layout.setContentsMargins(0,5,0,0); completed_layout.setSpacing(0); completed_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -459,8 +463,9 @@ class MainWindow(QMainWindow):
 
     def _create_input_area(self):
         add_btn = QPushButton("+ Add a task")
+        add_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         add_btn.setCursor(Qt.CursorShape.PointingHandCursor)
-        add_btn.setStyleSheet(f"QPushButton{{background:{PRIMARY_COLOR};color:white;border:none;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;}} QPushButton:hover{{background:#D6655E;}} QPushButton:pressed{{background:#B6453E;}}")
+        add_btn.setStyleSheet(f"QPushButton{{background:{PRIMARY_COLOR};color:white;border:2px solid transparent;padding:10px;border-radius:8px;font-size:14px;font-weight:bold;}} QPushButton:hover{{background:#D6655E;}} QPushButton:pressed{{background:#B6453E;}} QPushButton:focus{{border:2px solid #333333;}}")
         add_btn.clicked.connect(self.show_add_task_input)
         task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter...")
         task_input.setAccessibleName("Type a new task")
@@ -615,9 +620,10 @@ class MiniWindow(QMainWindow):
         else: back_btn.setText("<")
         back_btn.setFixedSize(28, 28); back_btn.setToolTip("Back to Full Mode")
         back_btn.setAccessibleName("Back to Full Mode")
+        back_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         back_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         back_btn.clicked.connect(self.show_main_window)
-        back_btn.setStyleSheet(f"QPushButton{{border:none;background:{PRIMARY_COLOR};border-radius:14px;}} QPushButton:hover{{background:#D6655E;}}")
+        back_btn.setStyleSheet(f"QPushButton{{border:2px solid transparent;background:{PRIMARY_COLOR};border-radius:14px;}} QPushButton:hover{{background:#D6655E;}} QPushButton:focus{{border:2px solid #333333;}}")
         title = QLabel("Active Tasks")
         title.setStyleSheet(f"font-size:16px;color:{PRIMARY_COLOR};font-weight:bold;")
         header_layout.addWidget(back_btn); header_layout.addWidget(title); header_layout.addStretch()
