@@ -347,17 +347,32 @@ class TaskItemWidget(QFrame):
 
         layout = QVBoxLayout()
         edit_input = QLineEdit(self.task.description)
+        edit_input.setAccessibleName("Edit task description")
         edit_input.selectAll()
         edit_input.setStyleSheet("""
                     QLineEdit { padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }
                     QLineEdit:focus { border: 1px solid #AAAAAA; }""")
 
         button_layout = QHBoxLayout()
+
         save_btn = QPushButton("Save")
         save_btn.setDefault(True)
-        save_btn.setStyleSheet(f"padding: 5px 15px; background-color: {PRIMARY_COLOR}; color: white; border: none; border-radius: 4px;")
+        save_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        save_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        save_btn.setStyleSheet(f"""
+            QPushButton {{ padding: 5px 15px; background-color: {PRIMARY_COLOR}; color: white; border: 2px solid transparent; border-radius: 4px; }}
+            QPushButton:hover {{ background-color: #D6655E; }}
+            QPushButton:focus {{ border: 2px solid #555555; }}
+        """)
+
         cancel_btn = QPushButton("Cancel")
-        cancel_btn.setStyleSheet("padding: 5px 15px; border: 1px solid #CCCCCC; border-radius: 4px;")
+        cancel_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        cancel_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        cancel_btn.setStyleSheet("""
+            QPushButton { padding: 5px 15px; border: 1px solid #CCCCCC; border-radius: 4px; background-color: white; }
+            QPushButton:hover { background-color: #F5F5F5; }
+            QPushButton:focus { border: 2px solid #555555; padding: 4px 14px; }
+        """)
 
         button_layout.addStretch()
         button_layout.addWidget(cancel_btn)

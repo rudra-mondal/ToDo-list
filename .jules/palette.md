@@ -9,3 +9,7 @@
 ## 2025-02-18 - Qt Stylesheet Keyboard Accessibility Focus Issues
 **Learning:** In PySide6/Qt stylesheets, setting `border: none;` on interactive elements (like `QPushButton`) completely removes native focus rings. When developers try to restore custom focus rings by adding `:focus { border: 2px solid [color]; }`, it causes layout shifts because the element grows by 4px (2px per side).
 **Action:** Use `border: 2px solid transparent;` as the default state instead of `border: none;` to reserve space for the focus ring, and ensure all interactive components use `setFocusPolicy(Qt.FocusPolicy.StrongFocus)` alongside a defined `:focus` border style to maintain keyboard accessibility without layout jank.
+
+## 2025-02-28 - Fixing Qt Focus Ring Accessibility Layout Shifts in Buttons
+**Learning:** In PySide6/Qt stylesheets, styling buttons with standard borders like `border: 1px solid #CCCCCC;` causes layout shifting when adding a custom focus ring (e.g., `border: 2px solid #555555;`).
+**Action:** When adding `:focus` states to Qt buttons with existing 1px borders, you must compensate for the 1px difference in border thickness by adjusting the padding in the `:focus` pseudo-class (e.g., changing `padding: 5px 15px;` to `padding: 4px 14px;`) to prevent layout jank during keyboard navigation.
