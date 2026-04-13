@@ -347,6 +347,7 @@ class TaskItemWidget(QFrame):
 
         layout = QVBoxLayout()
         edit_input = QLineEdit(self.task.description)
+        edit_input.setAccessibleName("Edit task description")
         edit_input.selectAll()
         edit_input.setStyleSheet("""
                     QLineEdit { padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }
@@ -355,9 +356,22 @@ class TaskItemWidget(QFrame):
         button_layout = QHBoxLayout()
         save_btn = QPushButton("Save")
         save_btn.setDefault(True)
-        save_btn.setStyleSheet(f"padding: 5px 15px; background-color: {PRIMARY_COLOR}; color: white; border: none; border-radius: 4px;")
+        save_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        save_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        save_btn.setStyleSheet(f"""
+            QPushButton {{ padding: 5px 15px; background-color: {PRIMARY_COLOR}; color: white; border: 2px solid transparent; border-radius: 4px; }}
+            QPushButton:hover {{ background-color: #D6655E; }}
+            QPushButton:focus {{ border: 2px solid #555555; }}
+        """)
+
         cancel_btn = QPushButton("Cancel")
-        cancel_btn.setStyleSheet("padding: 5px 15px; border: 1px solid #CCCCCC; border-radius: 4px;")
+        cancel_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        cancel_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        cancel_btn.setStyleSheet("""
+            QPushButton { padding: 5px 15px; border: 2px solid #CCCCCC; border-radius: 4px; }
+            QPushButton:hover { background-color: #EEEEEE; }
+            QPushButton:focus { border: 2px solid #555555; }
+        """)
 
         button_layout.addStretch()
         button_layout.addWidget(cancel_btn)
@@ -461,6 +475,7 @@ class MainWindow(QMainWindow):
     def _create_completed_section(self):
         completed_header = QPushButton("Completed 0  ⌄"); completed_header.setCheckable(True); completed_header.setChecked(True)
         completed_header.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        completed_header.setCursor(Qt.CursorShape.PointingHandCursor)
         completed_header.setStyleSheet(f"QPushButton{{text-align:left;padding:8px 5px;margin-top:10px;font-size:14px;font-weight:bold;color:{PRIMARY_COLOR};border:2px solid transparent;border-radius:4px;}} QPushButton:hover{{background-color:#EEEEEE;}} QPushButton:focus{{border:2px solid #555555;}}")
         completed_header.clicked.connect(self.toggle_completed_visibility)
         completed_items = QWidget(); completed_items.setVisible(True)
