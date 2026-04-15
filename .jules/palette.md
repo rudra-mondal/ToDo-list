@@ -9,3 +9,7 @@
 ## 2025-02-18 - Qt Stylesheet Keyboard Accessibility Focus Issues
 **Learning:** In PySide6/Qt stylesheets, setting `border: none;` on interactive elements (like `QPushButton`) completely removes native focus rings. When developers try to restore custom focus rings by adding `:focus { border: 2px solid [color]; }`, it causes layout shifts because the element grows by 4px (2px per side).
 **Action:** Use `border: 2px solid transparent;` as the default state instead of `border: none;` to reserve space for the focus ring, and ensure all interactive components use `setFocusPolicy(Qt.FocusPolicy.StrongFocus)` alongside a defined `:focus` border style to maintain keyboard accessibility without layout jank.
+
+## 2025-04-15 - Context Menu Discoverability in PySide6
+**Learning:** Components in PySide6 with custom context menus lack visual and screen reader discoverability by default. Users may not realize right-click actions (like edit or delete) are available.
+**Action:** Always add a `setToolTip` and `setAccessibleDescription` to components with custom context menus to explicitly indicate the available actions (e.g., 'Right-click to edit or delete') for both mouse and screen reader users.
