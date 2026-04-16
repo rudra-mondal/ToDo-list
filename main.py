@@ -238,6 +238,8 @@ class TaskItemWidget(QFrame):
 
         # Enable context menu only for main window items
         if not self.is_mini:
+            self.setToolTip("Right-click to edit or delete")
+            self.setAccessibleDescription("Right-click to edit or delete")
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             self.customContextMenuRequested.connect(self.show_context_menu)
 
