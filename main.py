@@ -490,10 +490,17 @@ class MainWindow(QMainWindow):
         add_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         add_btn.setStyleSheet(f"QPushButton{{background:{PRIMARY_COLOR};color:white;border:2px solid transparent;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;}} QPushButton:hover{{background:#D6655E;}} QPushButton:pressed{{background:#B6453E;}} QPushButton:focus{{border:2px solid #555555;}}")
         add_btn.clicked.connect(self.show_add_task_input)
-        task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter...")
+        task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter (Esc to cancel)...")
         task_input.setAccessibleName("Type a new task")
         task_input.setStyleSheet("QLineEdit{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;} QLineEdit:focus{border:1px solid #AAAAAA;}")
         task_input.returnPressed.connect(self.add_task); task_input.hide()
+
+        cancel_action = QAction(task_input)
+        cancel_action.setShortcut(Qt.Key.Key_Escape)
+        cancel_action.setShortcutContext(Qt.ShortcutContext.WidgetShortcut)
+        cancel_action.triggered.connect(self.cancel_add_task)
+        task_input.addAction(cancel_action)
+
         return add_btn, task_input
 
     def show_add_task_input(self):
@@ -502,7 +509,10 @@ class MainWindow(QMainWindow):
     def add_task(self):
         text = self.task_input.text().strip()
         self.model.add_task(text)
-        self.task_input.clear(); self.task_input.hide(); self.add_btn.show()
+        self.task_input.clear(); self.task_input.hide(); self.add_btn.show(); self.add_btn.setFocus()
+
+    def cancel_add_task(self):
+        self.task_input.clear(); self.task_input.hide(); self.add_btn.show(); self.add_btn.setFocus()
 
     def toggle_completed_visibility(self):
         is_checked = self.completed_header.isChecked()
