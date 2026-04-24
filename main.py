@@ -351,9 +351,9 @@ class TaskItemWidget(QFrame):
         edit_input = QLineEdit(self.task.description)
         edit_input.setAccessibleName("Edit task description")
         edit_input.selectAll()
-        edit_input.setStyleSheet("""
-                    QLineEdit { padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }
-                    QLineEdit:focus { border: 1px solid #AAAAAA; }""")
+        edit_input.setStyleSheet(f"""
+                    QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }}
+                    QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; }}""")
 
         button_layout = QHBoxLayout()
         save_btn = QPushButton("Save")
@@ -430,7 +430,13 @@ class MainWindow(QMainWindow):
         self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
         self.add_btn, self.task_input = self._create_input_area()
 
+        self.empty_state_label = QLabel("All caught up! Add a new task below.")
+        self.empty_state_label.setStyleSheet("color: #888888; font-style: italic; padding: 20px; text-align: center;")
+        self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.empty_state_label.hide()
+
         # Assemble Task Layout Structure
+        self.task_layout.addWidget(self.empty_state_label)
         self.task_layout.addWidget(self.completed_header)
         self.task_layout.addWidget(self.completed_items)
         self.task_layout.addItem(self.vertical_spacer)
@@ -492,7 +498,7 @@ class MainWindow(QMainWindow):
         add_btn.clicked.connect(self.show_add_task_input)
         task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter (Esc to cancel)...")
         task_input.setAccessibleName("Type a new task")
-        task_input.setStyleSheet("QLineEdit{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;} QLineEdit:focus{border:1px solid #AAAAAA;}")
+        task_input.setStyleSheet(f"QLineEdit{{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;}} QLineEdit:focus{{border:2px solid {PRIMARY_COLOR};}}")
         task_input.returnPressed.connect(self.add_task); task_input.hide()
 
         cancel_action = QAction(task_input)
@@ -546,6 +552,9 @@ class MainWindow(QMainWindow):
         active_tasks = [t for t in tasks if not t.completed]
         completed_tasks = [t for t in tasks if t.completed]
         active_tasks.sort(key=lambda t: not t.prioritized) # Prioritized first
+
+        # --- Empty State ---
+        self.empty_state_label.setVisible(len(active_tasks) == 0)
 
         # --- Rebuild Layout ---
         # Find the index where completed section starts (header or spacer if empty)
@@ -636,7 +645,13 @@ class MiniWindow(QMainWindow):
         self.scroll, self.task_container, self.task_layout = self._create_scroll_area()
         self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
+        self.empty_state_label = QLabel("No active tasks.")
+        self.empty_state_label.setStyleSheet("color: #888888; font-style: italic; padding: 20px; text-align: center;")
+        self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.empty_state_label.hide()
+
         # Assemble Layout
+        self.task_layout.addWidget(self.empty_state_label)
         self.task_layout.addItem(self.vertical_spacer) # Add spacer first in mini mode
         self.scroll.setWidget(self.task_container)
         layout.addWidget(header)
@@ -685,6 +700,9 @@ class MiniWindow(QMainWindow):
         # --- Filter and Sort Tasks ---
         active_tasks = [t for t in self.model.tasks if not t.completed]
         active_tasks.sort(key=lambda t: not t.prioritized)
+
+        # --- Empty State ---
+        self.empty_state_label.setVisible(len(active_tasks) == 0)
 
         # --- Rebuild Layout ---
         insertion_index = self.task_layout.indexOf(self.vertical_spacer)
