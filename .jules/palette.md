@@ -13,3 +13,7 @@
 ## 2025-05-18 - PySide6 Custom Context Menu Discoverability
 **Learning:** PySide6 components with custom context menus lack visual discoverability by default. Users, especially those relying on screen readers or unaware of hidden features, may not know that a right-click action is available to edit or delete items.
 **Action:** Always add a `setToolTip` and `setAccessibleDescription` to components that implement a custom context menu (e.g., `setToolTip("Right-click to edit or delete")`). This provides explicit affordance, indicating the available actions and improving both mouse hover discoverability and screen reader accessibility.
+
+## 2025-02-18 - Qt Dynamic Empty States and Clear Focus Styling
+**Learning:** In Qt applications, QLineEdits may have low-contrast focus borders that fail accessibility guidelines, and empty lists can leave users confused about what to do next or if the application is broken.
+**Action:** Always provide explicit, high-contrast `:focus` styling for text inputs. Additionally, implement dynamic "Empty State" labels that appear when list layouts (like task lists) are empty, offering helpful guidance or a call to action to improve the overall user experience and reduce cognitive load.
