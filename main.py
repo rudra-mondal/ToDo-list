@@ -529,22 +529,20 @@ class MainWindow(QMainWindow):
 
     def update_ui(self):
         # --- Clear Layouts (Keep non-TaskItemWidgets) ---
-        active_widgets_to_remove = []
-        for i in range(self.task_layout.count()):
+        # Bolt: Optimized by removing items in reverse order.
+        # This avoids O(N^2) shifting in the underlying layout array and unnecessary recalculations.
+        for i in reversed(range(self.task_layout.count())):
             item = self.task_layout.itemAt(i)
             widget = item.widget()
-            # Only mark TaskItemWidget instances for removal
+            # Only remove TaskItemWidget instances
             if widget and isinstance(widget, TaskItemWidget):
-                 active_widgets_to_remove.append(widget) # Store widget directly
-
-        # Remove marked TaskItemWidgets
-        for widget in active_widgets_to_remove:
-            widget.setParent(None) # Remove from parent layout
-            widget.deleteLater()
+                 self.task_layout.takeAt(i)
+                 widget.deleteLater()
 
         # Clear completed layout completely
-        while self.completed_layout.count():
-            item = self.completed_layout.takeAt(0)
+        # Bolt: Replaced O(N^2) takeAt(0) loop with O(N) reverse iteration loop.
+        for i in reversed(range(self.completed_layout.count())):
+            item = self.completed_layout.takeAt(i)
             if item and item.widget(): item.widget().deleteLater()
 
         # --- Separate and Sort Tasks ---
@@ -686,16 +684,13 @@ class MiniWindow(QMainWindow):
 
     def update_ui(self):
         # --- Clear Layout ---
-        widgets_to_remove = []
-        for i in range(self.task_layout.count()):
+        # Bolt: Optimized to remove elements in reverse using takeAt, eliminating layout shift overhead.
+        for i in reversed(range(self.task_layout.count())):
             item = self.task_layout.itemAt(i)
             widget = item.widget()
             if widget and isinstance(widget, TaskItemWidget):
-                widgets_to_remove.append(widget)
-
-        for widget in widgets_to_remove:
-             widget.setParent(None)
-             widget.deleteLater()
+                self.task_layout.takeAt(i)
+                widget.deleteLater()
 
         # --- Filter and Sort Tasks ---
         active_tasks = [t for t in self.model.tasks if not t.completed]
