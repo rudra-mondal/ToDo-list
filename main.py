@@ -218,6 +218,7 @@ class TaskItemWidget(QFrame):
 
         # Text Label
         self.text_label = QLabel(task.description)
+        self.text_label.setTextFormat(Qt.TextFormat.PlainText) # Prevent rich text injection
         self.text_label.setWordWrap(True)
         self.text_label.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         self.update_text_style()
