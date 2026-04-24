@@ -17,3 +17,7 @@
 ## 2025-02-18 - Qt Dynamic Empty States and Clear Focus Styling
 **Learning:** In Qt applications, QLineEdits may have low-contrast focus borders that fail accessibility guidelines, and empty lists can leave users confused about what to do next or if the application is broken.
 **Action:** Always provide explicit, high-contrast `:focus` styling for text inputs. Additionally, implement dynamic "Empty State" labels that appear when list layouts (like task lists) are empty, offering helpful guidance or a call to action to improve the overall user experience and reduce cognitive load.
+
+## 2024-04-24 - QFrame Custom Context Menu Keyboard Accessibility
+**Learning:** By default, custom context menus on generic Qt widgets (like `QFrame`) are strictly mouse-only (triggered via right-click). They ignore the "Menu" key on the keyboard entirely, breaking keyboard accessibility.
+**Action:** When implementing custom context menus on generic components, always manually configure `setFocusPolicy(Qt.FocusPolicy.StrongFocus)`, add a visual `:focus` state in the QSS, and override `keyPressEvent` to intercept `Qt.Key.Key_Menu` (and optionally `Return`/`Enter`) to programmatically emit the `customContextMenuRequested` signal. Update tooltip strings to explicitly announce the keyboard shortcut.
