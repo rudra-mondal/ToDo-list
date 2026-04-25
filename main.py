@@ -198,6 +198,7 @@ class TaskItemWidget(QFrame):
             }}
             #TaskItemFrame:focus {{
                 border: 2px solid {PRIMARY_COLOR};
+                margin: 3px 1px;
             }}
             #TaskItemFrame:hover {{
                 border: 1px solid {PRIMARY_COLOR};
@@ -246,6 +247,7 @@ class TaskItemWidget(QFrame):
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             self.customContextMenuRequested.connect(self.show_context_menu)
             self.setToolTip("Right-click or press Menu key to edit or delete")
+            self.setAccessibleName(f"Task: {task.description}")
             self.setAccessibleDescription("Right-click or press Menu key to edit or delete")
 
     def keyPressEvent(self, event):
@@ -290,7 +292,7 @@ class TaskItemWidget(QFrame):
     def update_status_icon(self):
         action_text = "Mark as incomplete" if self.task.completed else "Mark as completed"
         self.status_btn.setToolTip(action_text)
-        self.status_btn.setAccessibleName(action_text)
+        self.status_btn.setAccessibleName(f"{action_text}: {self.task.description}")
         base_style = "QPushButton { border: 2px solid transparent; border-radius: 4px; outline: none; } QPushButton:focus { border: 2px solid " + PRIMARY_COLOR + "; }"
         icon_name = "check.svg" if self.task.completed else "radio.svg"
         icon = self._get_icon(icon_name)
@@ -306,7 +308,7 @@ class TaskItemWidget(QFrame):
     def update_priority_icon(self):
         action_text = "Remove priority" if self.task.prioritized else "Mark as priority"
         self.priority_btn.setToolTip(action_text)
-        self.priority_btn.setAccessibleName(action_text)
+        self.priority_btn.setAccessibleName(f"{action_text}: {self.task.description}")
         color = PRIMARY_COLOR if self.task.prioritized else "#CCCCCC"
         base_style = f"QPushButton {{ border: 2px solid transparent; color: {color}; border-radius: 4px; outline: none; }} QPushButton:focus {{ border: 2px solid {PRIMARY_COLOR}; }}"
         icon_name = "star_filled.svg" if self.task.prioritized else "star.svg"
@@ -497,6 +499,7 @@ class MainWindow(QMainWindow):
 
     def _create_completed_section(self):
         completed_header = QPushButton("Completed 0  ⌄"); completed_header.setCheckable(True); completed_header.setChecked(True)
+        completed_header.setAccessibleName("Toggle completed tasks visibility")
         completed_header.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         completed_header.setCursor(Qt.CursorShape.PointingHandCursor)
         completed_header.setStyleSheet(f"QPushButton{{text-align:left;padding:8px 5px;margin-top:10px;font-size:14px;font-weight:bold;color:{PRIMARY_COLOR};border:2px solid transparent;border-radius:4px;}} QPushButton:hover{{background-color:#EEEEEE;}} QPushButton:focus{{border:2px solid #555555;}}")
