@@ -546,6 +546,16 @@ class MainWindow(QMainWindow):
         self.completed_header.setText(f"Completed {completed_count}  {symbol}")
 
     def update_ui(self):
+        # --- Track Focus ---
+        fw = QApplication.focusWidget()
+        focus_task = None
+        focus_part = None
+        if isinstance(fw, TaskItemWidget):
+            focus_task, focus_part = fw.task, 'frame'
+        elif fw and isinstance(fw.parent(), TaskItemWidget):
+            if fw == fw.parent().status_btn: focus_task, focus_part = fw.parent().task, 'status'
+            elif fw == fw.parent().priority_btn: focus_task, focus_part = fw.parent().task, 'priority'
+
         # --- Clear Layouts (Keep non-TaskItemWidgets) ---
         # Bolt: Optimized by removing items in reverse order.
         # This avoids O(N^2) shifting in the underlying layout array and unnecessary recalculations.
@@ -598,6 +608,17 @@ class MainWindow(QMainWindow):
         if not current_spacer_item or current_spacer_item.spacerItem() != self.vertical_spacer:
              self.task_layout.removeItem(self.vertical_spacer)
              self.task_layout.addItem(self.vertical_spacer)
+
+        # --- Restore Focus ---
+        if focus_task:
+            for layout in (self.task_layout, self.completed_layout):
+                for i in range(layout.count()):
+                    item = layout.itemAt(i)
+                    w = item.widget() if item else None
+                    if isinstance(w, TaskItemWidget) and w.task is focus_task:
+                        if focus_part == 'frame': w.setFocus()
+                        elif focus_part == 'status': w.status_btn.setFocus()
+                        elif focus_part == 'priority': w.priority_btn.setFocus()
 
         # Handle add button/input visibility
         if not self.task_input.isHidden(): self.add_btn.hide()
@@ -701,6 +722,16 @@ class MiniWindow(QMainWindow):
         return scroll, task_container, task_layout
 
     def update_ui(self):
+        # --- Track Focus ---
+        fw = QApplication.focusWidget()
+        focus_task = None
+        focus_part = None
+        if isinstance(fw, TaskItemWidget):
+            focus_task, focus_part = fw.task, 'frame'
+        elif fw and isinstance(fw.parent(), TaskItemWidget):
+            if fw == fw.parent().status_btn: focus_task, focus_part = fw.parent().task, 'status'
+            elif fw == fw.parent().priority_btn: focus_task, focus_part = fw.parent().task, 'priority'
+
         # --- Clear Layout ---
         # Bolt: Optimized to remove elements in reverse using takeAt, eliminating layout shift overhead.
         for i in reversed(range(self.task_layout.count())):
@@ -730,6 +761,16 @@ class MiniWindow(QMainWindow):
         if not current_spacer_item or current_spacer_item.spacerItem() != self.vertical_spacer:
              self.task_layout.removeItem(self.vertical_spacer)
              self.task_layout.addItem(self.vertical_spacer)
+
+        # --- Restore Focus ---
+        if focus_task:
+            for i in range(self.task_layout.count()):
+                item = self.task_layout.itemAt(i)
+                w = item.widget() if item else None
+                if isinstance(w, TaskItemWidget) and w.task is focus_task:
+                    if focus_part == 'frame': w.setFocus()
+                    elif focus_part == 'status': w.status_btn.setFocus()
+                    elif focus_part == 'priority': w.priority_btn.setFocus()
 
 
     def show_main_window(self):
