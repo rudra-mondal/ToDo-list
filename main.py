@@ -368,9 +368,17 @@ class TaskItemWidget(QFrame):
         edit_input = QLineEdit(self.task.description)
         edit_input.setAccessibleName("Edit task description")
         edit_input.selectAll()
-        edit_input.setStyleSheet(f"""
-                    QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }}
-                    QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; }}""")
+
+        base_edit_style = f"""
+                    QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; margin: 1px; }}
+                    QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; margin: 0px; }}"""
+        edit_input.setStyleSheet(base_edit_style)
+
+        error_label = QLabel("Task description cannot be empty.")
+        error_label.setStyleSheet("color: red; font-size: 12px; margin-left: 2px;")
+        error_label.hide()
+
+        edit_input.textChanged.connect(lambda: (error_label.hide(), edit_input.setStyleSheet(base_edit_style)))
 
         button_layout = QHBoxLayout()
         save_btn = QPushButton("Save")
@@ -396,16 +404,17 @@ class TaskItemWidget(QFrame):
         button_layout.addWidget(cancel_btn)
         button_layout.addWidget(save_btn)
 
-        save_btn.clicked.connect(lambda: self.save_edit(edit_input.text(), dialog, index_to_edit))
+        save_btn.clicked.connect(lambda: self.save_edit(edit_input.text(), dialog, index_to_edit, error_label))
         cancel_btn.clicked.connect(dialog.reject)
         edit_input.returnPressed.connect(save_btn.click)
 
         layout.addWidget(edit_input)
+        layout.addWidget(error_label)
         layout.addLayout(button_layout)
         dialog.setLayout(layout)
         dialog.exec()
 
-    def save_edit(self, text, dialog, index_to_edit):
+    def save_edit(self, text, dialog, index_to_edit, error_label=None):
         new_description = text.strip()
         if new_description:
             self.model.edit_task(index_to_edit, new_description)
@@ -415,6 +424,8 @@ class TaskItemWidget(QFrame):
             edit_input = dialog.findChild(QLineEdit)
             if edit_input:
                  edit_input.setStyleSheet(edit_input.styleSheet() + "border: 1px solid red;")
+            if error_label:
+                 error_label.show()
 
 
 # --- Main Window ---
@@ -516,7 +527,7 @@ class MainWindow(QMainWindow):
         add_btn.clicked.connect(self.show_add_task_input)
         task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter (Esc to cancel)...")
         task_input.setAccessibleName("Type a new task")
-        task_input.setStyleSheet(f"QLineEdit{{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;}} QLineEdit:focus{{border:2px solid {PRIMARY_COLOR};}}")
+        task_input.setStyleSheet(f"QLineEdit{{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;margin:1px;}} QLineEdit:focus{{border:2px solid {PRIMARY_COLOR};margin:0px;}}")
         task_input.returnPressed.connect(self.add_task); task_input.hide()
 
         cancel_action = QAction(task_input)
