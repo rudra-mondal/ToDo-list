@@ -29,3 +29,7 @@
 ## 2025-05-20 - Preserving Keyboard Focus During Dynamic UI Rebuilds
 **Learning:** In PySide6 applications, when user actions (like toggling a checkbox) trigger a data model update that completely rebuilds the layout, the widget that had focus is destroyed. This causes the application to lose focus entirely (`None`), severely disrupting keyboard navigation because the user has to tab back from the beginning of the window.
 **Action:** When dynamic UI rebuilds are unavoidable, temporarily store a reference to the underlying data model (e.g., the specific task object) and the sub-component that had focus before the rebuild. After repopulating the layout, search for the newly created widget bound to that data model and explicitly call `setFocus()` on it to restore seamless keyboard accessibility.
+
+## 2025-05-20 - Accessible Form Validation Feedback in Qt
+**Learning:** In PySide6/Qt UIs, relying solely on changing the border color of a `QLineEdit` (e.g., to red) to indicate form validation failure is inaccessible for colorblind users and screen readers.
+**Action:** Always provide explicit, text-based inline error messages (e.g., using a `QLabel` with red text) adjacent to the input field. Additionally, when a validation error occurs, dynamically update the `accessibleDescription` of the `QLineEdit` so screen readers announce the error context clearly.

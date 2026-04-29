@@ -372,6 +372,11 @@ class TaskItemWidget(QFrame):
                     QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }}
                     QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; }}""")
 
+        error_label = QLabel("Task description cannot be empty.")
+        error_label.setObjectName("edit_error_label")
+        error_label.setStyleSheet("color: red; font-size: 12px;")
+        error_label.hide()
+
         button_layout = QHBoxLayout()
         save_btn = QPushButton("Save")
         save_btn.setDefault(True)
@@ -400,7 +405,17 @@ class TaskItemWidget(QFrame):
         cancel_btn.clicked.connect(dialog.reject)
         edit_input.returnPressed.connect(save_btn.click)
 
+        def reset_error_state():
+            error_label.hide()
+            edit_input.setAccessibleDescription("")
+            edit_input.setStyleSheet(f"""
+                        QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }}
+                        QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; }}""")
+
+        edit_input.textChanged.connect(reset_error_state)
+
         layout.addWidget(edit_input)
+        layout.addWidget(error_label)
         layout.addLayout(button_layout)
         dialog.setLayout(layout)
         dialog.exec()
@@ -413,8 +428,14 @@ class TaskItemWidget(QFrame):
         else:
             print("Task description cannot be empty.")
             edit_input = dialog.findChild(QLineEdit)
+            error_label = dialog.findChild(QLabel, "edit_error_label")
             if edit_input:
-                 edit_input.setStyleSheet(edit_input.styleSheet() + "border: 1px solid red;")
+                 edit_input.setStyleSheet(f"""
+                        QLineEdit {{ padding: 8px; border: 1px solid red; border-radius: 4px; }}
+                        QLineEdit:focus {{ border: 2px solid red; }}""")
+                 edit_input.setAccessibleDescription("Error: Task description cannot be empty.")
+            if error_label:
+                 error_label.show()
 
 
 # --- Main Window ---
