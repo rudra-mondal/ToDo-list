@@ -501,7 +501,8 @@ class MainWindow(QMainWindow):
         self.mini_btn = QPushButton(); min_icon_full_path = resource_path(os.path.join("Assets", "minimize.svg")) # Use resource_path
         if os.path.isfile(min_icon_full_path): self.mini_btn.setIcon(QIcon(min_icon_full_path))
         else: self.mini_btn.setText("_")
-        self.mini_btn.setFixedSize(32, 32); self.mini_btn.setToolTip("Switch to Mini Mode")
+        self.mini_btn.setFixedSize(32, 32); self.mini_btn.setToolTip("Switch to Mini Mode (Ctrl+M)")
+        self.mini_btn.setShortcut("Ctrl+M")
         self.mini_btn.setAccessibleName("Switch to Mini Mode")
         self.mini_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         self.mini_btn.clicked.connect(self.show_mini_window)
@@ -531,6 +532,8 @@ class MainWindow(QMainWindow):
 
     def _create_input_area(self):
         add_btn = QPushButton("+ Add a task")
+        add_btn.setToolTip("Add a new task (Ctrl+N)")
+        add_btn.setShortcut("Ctrl+N")
         add_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         add_btn.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         add_btn.setStyleSheet(f"QPushButton{{background:{PRIMARY_COLOR};color:white;border:2px solid transparent;padding:12px;border-radius:8px;font-size:14px;font-weight:bold;}} QPushButton:hover{{background:#D6655E;}} QPushButton:pressed{{background:#B6453E;}} QPushButton:focus{{border:2px solid #555555;}}")
@@ -724,7 +727,8 @@ class MiniWindow(QMainWindow):
         back_btn = QPushButton(); back_icon_full_path = resource_path(os.path.join("Assets", "back.svg")) # Use resource_path
         if os.path.isfile(back_icon_full_path): back_btn.setIcon(QIcon(back_icon_full_path))
         else: back_btn.setText("<")
-        back_btn.setFixedSize(28, 28); back_btn.setToolTip("Back to Full Mode")
+        back_btn.setFixedSize(28, 28); back_btn.setToolTip("Back to Full Mode (Ctrl+M)")
+        back_btn.setShortcut("Ctrl+M")
         back_btn.setAccessibleName("Back to Full Mode")
         back_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         back_btn.clicked.connect(self.show_main_window)

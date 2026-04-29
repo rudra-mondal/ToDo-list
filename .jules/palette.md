@@ -33,3 +33,7 @@
 ## 2025-05-20 - Accessible Form Validation Feedback in Qt
 **Learning:** In PySide6/Qt UIs, relying solely on changing the border color of a `QLineEdit` (e.g., to red) to indicate form validation failure is inaccessible for colorblind users and screen readers.
 **Action:** Always provide explicit, text-based inline error messages (e.g., using a `QLabel` with red text) adjacent to the input field. Additionally, when a validation error occurs, dynamically update the `accessibleDescription` of the `QLineEdit` so screen readers announce the error context clearly.
+
+## 2024-05-15 - Adding explicit tooltips for Qt keyboard shortcuts
+**Learning:** PySide6/Qt doesn't automatically show keyboard shortcuts in tooltips when you set a shortcut via `setShortcut()`. Screen readers and visual users might miss these shortcuts if they're not explicitly documented in the UI.
+**Action:** Always append the keyboard shortcut (e.g., "(Ctrl+N)") to the `setToolTip` string when applying a `setShortcut` to a Qt component to ensure proper discoverability.
