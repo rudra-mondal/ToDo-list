@@ -37,3 +37,7 @@
 ## 2024-05-15 - Adding explicit tooltips for Qt keyboard shortcuts
 **Learning:** PySide6/Qt doesn't automatically show keyboard shortcuts in tooltips when you set a shortcut via `setShortcut()`. Screen readers and visual users might miss these shortcuts if they're not explicitly documented in the UI.
 **Action:** Always append the keyboard shortcut (e.g., "(Ctrl+N)") to the `setToolTip` string when applying a `setShortcut` to a Qt component to ensure proper discoverability.
+
+## $(date +%Y-%m-%d) - Contrast limits and Double-Click Discoverability
+**Learning:** Default colors like `red` (#FF0000) or light greys (#888888) often fail WCAG AA contrast standards (e.g. ~3.5:1 ratio for #888888). Furthermore, implicit interactions like double-click to edit are expected desktop patterns, but their discoverability is zero without explicit hints.
+**Action:** Always verify color contrast using a checker tool, using safer darker tones (#CC0000, #555555/666666). When adding implicit interactions like `mouseDoubleClickEvent`, immediately update `setToolTip` and `setAccessibleDescription` to document them.
