@@ -246,9 +246,18 @@ class TaskItemWidget(QFrame):
             self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             self.customContextMenuRequested.connect(self.show_context_menu)
-            self.setToolTip("Right-click or press Menu key to edit or delete")
+            self.setToolTip("Double-click, right-click, or press Menu key to edit or delete")
             self.setAccessibleName(f"Task: {task.description}")
-            self.setAccessibleDescription("Right-click or press Menu key to edit or delete")
+            self.setAccessibleDescription("Double-click, right-click, or press Menu key to edit or delete")
+
+    def mouseDoubleClickEvent(self, event):
+        if not self.is_mini and event.button() == Qt.MouseButton.LeftButton:
+            current_index = self.model._find_task_index(self.task)
+            if current_index != -1:
+                self.edit_task(current_index)
+            event.accept()
+        else:
+            super().mouseDoubleClickEvent(event)
 
     def keyPressEvent(self, event):
         if not self.is_mini and event.key() == Qt.Key.Key_Menu:
@@ -325,7 +334,7 @@ class TaskItemWidget(QFrame):
     def update_text_style(self):
         style = "font-size: 14px;"
         if self.task.completed:
-            style += "color: #888888; text-decoration: line-through;"
+            style += "color: #666666; text-decoration: line-through;"
         else:
             style += "color: #333333; text-decoration: none;"
         self.text_label.setStyleSheet(style)
@@ -374,7 +383,7 @@ class TaskItemWidget(QFrame):
 
         error_label = QLabel("Task description cannot be empty.")
         error_label.setObjectName("edit_error_label")
-        error_label.setStyleSheet("color: red; font-size: 12px;")
+        error_label.setStyleSheet("color: #CC0000; font-size: 12px;")
         error_label.hide()
 
         button_layout = QHBoxLayout()
@@ -431,8 +440,8 @@ class TaskItemWidget(QFrame):
             error_label = dialog.findChild(QLabel, "edit_error_label")
             if edit_input:
                  edit_input.setStyleSheet(f"""
-                        QLineEdit {{ padding: 8px; border: 1px solid red; border-radius: 4px; }}
-                        QLineEdit:focus {{ border: 2px solid red; }}""")
+                        QLineEdit {{ padding: 8px; border: 1px solid #CC0000; border-radius: 4px; }}
+                        QLineEdit:focus {{ border: 2px solid #CC0000; }}""")
                  edit_input.setAccessibleDescription("Error: Task description cannot be empty.")
             if error_label:
                  error_label.show()
@@ -469,7 +478,7 @@ class MainWindow(QMainWindow):
         self.add_btn, self.task_input = self._create_input_area()
 
         self.empty_state_label = QLabel("All caught up! Add a new task below.")
-        self.empty_state_label.setStyleSheet("color: #888888; font-style: italic; padding: 20px; text-align: center;")
+        self.empty_state_label.setStyleSheet("color: #666666; font-style: italic; padding: 20px; text-align: center;")
         self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty_state_label.hide()
 
@@ -707,7 +716,7 @@ class MiniWindow(QMainWindow):
         self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.empty_state_label = QLabel("No active tasks.")
-        self.empty_state_label.setStyleSheet("color: #888888; font-style: italic; padding: 20px; text-align: center;")
+        self.empty_state_label.setStyleSheet("color: #666666; font-style: italic; padding: 20px; text-align: center;")
         self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty_state_label.hide()
 
