@@ -37,3 +37,6 @@
 ## 2024-05-15 - Adding explicit tooltips for Qt keyboard shortcuts
 **Learning:** PySide6/Qt doesn't automatically show keyboard shortcuts in tooltips when you set a shortcut via `setShortcut()`. Screen readers and visual users might miss these shortcuts if they're not explicitly documented in the UI.
 **Action:** Always append the keyboard shortcut (e.g., "(Ctrl+N)") to the `setToolTip` string when applying a `setShortcut` to a Qt component to ensure proper discoverability.
+## 2026-05-01 - Fix color contrast and layout shifts
+**Learning:** The default '#888888' and 'red' colors often fail WCAG contrast checks. Also, adding a 1px border on focus can cause layout shifts.
+**Action:** Use '#555555' or '#CC0000' for better contrast, and offset focus border thickness by adjusting margins (e.g., add margin: 1px for default, margin: 0px for focus).
