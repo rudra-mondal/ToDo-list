@@ -246,9 +246,9 @@ class TaskItemWidget(QFrame):
             self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
             self.customContextMenuRequested.connect(self.show_context_menu)
-            self.setToolTip("Right-click or press Menu key to edit or delete")
+            self.setToolTip("Double-click, right-click, or press Menu key to edit or delete")
             self.setAccessibleName(f"Task: {task.description}")
-            self.setAccessibleDescription("Right-click or press Menu key to edit or delete")
+            self.setAccessibleDescription("Double-click, right-click, or press Menu key to edit or delete")
 
     def keyPressEvent(self, event):
         if not self.is_mini and event.key() == Qt.Key.Key_Menu:
@@ -259,6 +259,15 @@ class TaskItemWidget(QFrame):
             event.accept()
         else:
             super().keyPressEvent(event)
+
+    def mouseDoubleClickEvent(self, event):
+        if not self.is_mini and event.button() == Qt.MouseButton.LeftButton:
+            current_index = self.model._find_task_index(self.task)
+            if current_index != -1:
+                self.edit_task(current_index)
+            event.accept()
+        else:
+            super().mouseDoubleClickEvent(event)
 
     def _on_status_toggled(self):
         current_index = self.model._find_task_index(self.task)
