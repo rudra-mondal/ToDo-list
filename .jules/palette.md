@@ -37,3 +37,7 @@
 ## 2024-05-15 - Adding explicit tooltips for Qt keyboard shortcuts
 **Learning:** PySide6/Qt doesn't automatically show keyboard shortcuts in tooltips when you set a shortcut via `setShortcut()`. Screen readers and visual users might miss these shortcuts if they're not explicitly documented in the UI.
 **Action:** Always append the keyboard shortcut (e.g., "(Ctrl+N)") to the `setToolTip` string when applying a `setShortcut` to a Qt component to ensure proper discoverability.
+
+## 2025-05-20 - Ensuring WCAG AA Color Contrast in Qt Apps
+**Learning:** Default CSS colors like "red" or light gray "#888888" often fail WCAG AA contrast standards, making text difficult to read for visually impaired users. This is especially problematic for inline error messages and empty states.
+**Action:** Always test and ensure custom text and UI element colors meet WCAG AA contrast standards. Avoid using default CSS colors like "red" or "#888888" and prefer higher contrast alternatives like "#CC0000" or "#555555".
