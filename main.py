@@ -325,7 +325,7 @@ class TaskItemWidget(QFrame):
     def update_text_style(self):
         style = "font-size: 14px;"
         if self.task.completed:
-            style += "color: #888888; text-decoration: line-through;"
+            style += "color: #555555; text-decoration: line-through;"
         else:
             style += "color: #333333; text-decoration: none;"
         self.text_label.setStyleSheet(style)
@@ -369,12 +369,12 @@ class TaskItemWidget(QFrame):
         edit_input.setAccessibleName("Edit task description")
         edit_input.selectAll()
         edit_input.setStyleSheet(f"""
-                    QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }}
-                    QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; }}""")
+                    QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; margin: 1px; }}
+                    QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; margin: 0px; }}""")
 
         error_label = QLabel("Task description cannot be empty.")
         error_label.setObjectName("edit_error_label")
-        error_label.setStyleSheet("color: red; font-size: 12px;")
+        error_label.setStyleSheet("color: #CC0000; font-size: 12px;")
         error_label.hide()
 
         button_layout = QHBoxLayout()
@@ -409,8 +409,8 @@ class TaskItemWidget(QFrame):
             error_label.hide()
             edit_input.setAccessibleDescription("")
             edit_input.setStyleSheet(f"""
-                        QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; }}
-                        QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; }}""")
+                        QLineEdit {{ padding: 8px; border: 1px solid #CCCCCC; border-radius: 4px; margin: 1px; }}
+                        QLineEdit:focus {{ border: 2px solid {PRIMARY_COLOR}; margin: 0px; }}""")
 
         edit_input.textChanged.connect(reset_error_state)
 
@@ -431,8 +431,8 @@ class TaskItemWidget(QFrame):
             error_label = dialog.findChild(QLabel, "edit_error_label")
             if edit_input:
                  edit_input.setStyleSheet(f"""
-                        QLineEdit {{ padding: 8px; border: 1px solid red; border-radius: 4px; }}
-                        QLineEdit:focus {{ border: 2px solid red; }}""")
+                        QLineEdit {{ padding: 8px; border: 1px solid #CC0000; border-radius: 4px; margin: 1px; }}
+                        QLineEdit:focus {{ border: 2px solid #CC0000; margin: 0px; }}""")
                  edit_input.setAccessibleDescription("Error: Task description cannot be empty.")
             if error_label:
                  error_label.show()
@@ -469,7 +469,7 @@ class MainWindow(QMainWindow):
         self.add_btn, self.task_input = self._create_input_area()
 
         self.empty_state_label = QLabel("All caught up! Add a new task below.")
-        self.empty_state_label.setStyleSheet("color: #888888; font-style: italic; padding: 20px; text-align: center;")
+        self.empty_state_label.setStyleSheet("color: #555555; font-style: italic; padding: 20px; text-align: center;")
         self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty_state_label.hide()
 
@@ -540,7 +540,7 @@ class MainWindow(QMainWindow):
         add_btn.clicked.connect(self.show_add_task_input)
         task_input = QLineEdit(); task_input.setPlaceholderText("Type a new task and press Enter (Esc to cancel)...")
         task_input.setAccessibleName("Type a new task")
-        task_input.setStyleSheet(f"QLineEdit{{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;}} QLineEdit:focus{{border:2px solid {PRIMARY_COLOR};}}")
+        task_input.setStyleSheet(f"QLineEdit{{padding:12px;border:1px solid #CCCCCC;border-radius:8px;font-size:14px;background-color:white;margin:1px;}} QLineEdit:focus{{border:2px solid {PRIMARY_COLOR};margin:0px;}}")
         task_input.returnPressed.connect(self.add_task); task_input.hide()
 
         cancel_action = QAction(task_input)
@@ -707,7 +707,7 @@ class MiniWindow(QMainWindow):
         self.vertical_spacer = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
         self.empty_state_label = QLabel("No active tasks.")
-        self.empty_state_label.setStyleSheet("color: #888888; font-style: italic; padding: 20px; text-align: center;")
+        self.empty_state_label.setStyleSheet("color: #555555; font-style: italic; padding: 20px; text-align: center;")
         self.empty_state_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.empty_state_label.hide()
 
