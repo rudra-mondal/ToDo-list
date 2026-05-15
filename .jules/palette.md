@@ -37,3 +37,7 @@
 ## 2024-05-15 - Adding explicit tooltips for Qt keyboard shortcuts
 **Learning:** PySide6/Qt doesn't automatically show keyboard shortcuts in tooltips when you set a shortcut via `setShortcut()`. Screen readers and visual users might miss these shortcuts if they're not explicitly documented in the UI.
 **Action:** Always append the keyboard shortcut (e.g., "(Ctrl+N)") to the `setToolTip` string when applying a `setShortcut` to a Qt component to ensure proper discoverability.
+
+## 2025-05-20 - Document Hidden Interactions
+**Learning:** Adding hidden mouse interactions (like double-click to edit) improves power-user UX, but can harm discoverability and accessibility if not explicitly documented.
+**Action:** When adding hidden mouse interactions to PySide6 UI elements, always update the widget's `setToolTip` and `setAccessibleDescription` to explicitly state the interaction so both visual and screen reader users can discover it.
