@@ -37,3 +37,7 @@
 ## 2024-05-15 - Adding explicit tooltips for Qt keyboard shortcuts
 **Learning:** PySide6/Qt doesn't automatically show keyboard shortcuts in tooltips when you set a shortcut via `setShortcut()`. Screen readers and visual users might miss these shortcuts if they're not explicitly documented in the UI.
 **Action:** Always append the keyboard shortcut (e.g., "(Ctrl+N)") to the `setToolTip` string when applying a `setShortcut` to a Qt component to ensure proper discoverability.
+
+## 2026-05-16 - Accessible Color Contrast in Qt UIs
+**Learning:** Default or generic UI colors like `#888888` (light grey) for empty state text/completed tasks and pure `red` for error borders often fail WCAG AA color contrast guidelines against light or white backgrounds, making them difficult for visually impaired or colorblind users to read.
+**Action:** Always verify color contrast ratios. Use higher contrast alternatives like `#555555` instead of `#888888` for secondary text, and deeper shades like `#CC0000` instead of standard `red` for error indicators to ensure text and semantic borders are clearly visible to all users.
