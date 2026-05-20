@@ -41,3 +41,7 @@
 ## 2026-05-19 - Enhanced Color Contrast for Text and Errors
 **Learning:** Default CSS colors like 'red' and light greys like '#888888' fail WCAG AA contrast standards, reducing readability for users with visual impairments.
 **Action:** Use higher contrast alternatives like '#CC0000' for errors and '#555555' for muted text to ensure accessible UI components.
+
+## 2025-05-20 - Contextual Accessible Names for Collapsible Sections
+**Learning:** Generic names like "Toggle completed tasks visibility" on collapsible sections are not intuitive. They don't convey the current state or the result of the action.
+**Action:** Dynamically update `accessibleName` and `setToolTip` on collapsible headers to indicate the *action* (e.g., "Collapse completed tasks" or "Expand completed tasks") based on their current state.
