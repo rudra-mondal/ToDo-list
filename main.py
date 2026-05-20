@@ -521,7 +521,8 @@ class MainWindow(QMainWindow):
 
     def _create_completed_section(self):
         completed_header = QPushButton("Completed 0  ⌄"); completed_header.setCheckable(True); completed_header.setChecked(True)
-        completed_header.setAccessibleName("Toggle completed tasks visibility")
+        completed_header.setAccessibleName("Collapse completed tasks")
+        completed_header.setToolTip("Collapse completed tasks")
         completed_header.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         completed_header.setCursor(Qt.CursorShape.PointingHandCursor)
         completed_header.setStyleSheet(f"QPushButton{{text-align:left;padding:8px 5px;margin-top:10px;font-size:14px;font-weight:bold;color:{PRIMARY_COLOR};border:2px solid transparent;border-radius:4px;}} QPushButton:hover{{background-color:#EEEEEE;}} QPushButton:focus{{border:2px solid #555555;}}")
@@ -566,8 +567,11 @@ class MainWindow(QMainWindow):
         is_checked = self.completed_header.isChecked()
         self.completed_items.setVisible(is_checked)
         symbol = "⌄" if is_checked else "⌃"
+        action_text = "Collapse completed tasks" if is_checked else "Expand completed tasks"
         completed_count = sum(t.completed for t in self.model.tasks)
         self.completed_header.setText(f"Completed {completed_count}  {symbol}")
+        self.completed_header.setAccessibleName(action_text)
+        self.completed_header.setToolTip(action_text)
 
     def update_ui(self):
         # --- Track Focus ---
@@ -625,7 +629,10 @@ class MainWindow(QMainWindow):
 
         # Update completed header text
         symbol = "⌄" if self.completed_header.isChecked() else "⌃"
+        action_text = "Collapse completed tasks" if self.completed_header.isChecked() else "Expand completed tasks"
         self.completed_header.setText(f"Completed {len(completed_tasks)}  {symbol}")
+        self.completed_header.setAccessibleName(action_text)
+        self.completed_header.setToolTip(action_text)
 
         # Ensure spacer is still at the very end of the main task layout
         current_spacer_item = self.task_layout.itemAt(self.task_layout.count() - 1)
